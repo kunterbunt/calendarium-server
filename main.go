@@ -126,6 +126,8 @@ func main() {
 		errEmailSmtpHost := os.Args[13]
 		errEmailSmtpPort := os.Args[14]
 		server.AttachEmailer(errEmailAddr, errEmailPw, errEmailSmtpHost, errEmailSmtpPort, errDestEmailAddr)
+	} else {
+		fmt.Println("Billbee forwarding disabled.")
 	}
 	// Create tables if-need-be.
 	err = model.Validate(db, &server.Mutex)
