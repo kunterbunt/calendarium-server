@@ -120,12 +120,13 @@ func main() {
 		fmt.Println("Billbee forwarding enabled.")
 		server.AttachBillbeeForwarder(billbeeAPIKey, billbeeAuthUsername, billbeeAuthPw, billbeeUrl)
 		// Attach emailer to send emails upon error.
-		errEmailAddr := os.Args[9]
-		errDestEmailAddr := []string{os.Args[10], os.Args[11]}
-		errEmailPw := os.Args[12]
-		errEmailSmtpHost := os.Args[13]
-		errEmailSmtpPort := os.Args[14]
-		server.AttachEmailer(errEmailAddr, errEmailPw, errEmailSmtpHost, errEmailSmtpPort, errDestEmailAddr)
+		fmt.Println("Emails upon error are currently disabled -- need to test and fix.")
+		// errEmailAddr := os.Args[9]
+		// errDestEmailAddr := []string{os.Args[10], os.Args[11]}
+		// errEmailPw := os.Args[12]
+		// errEmailSmtpHost := os.Args[13]
+		// errEmailSmtpPort := os.Args[14]
+		// server.AttachEmailer(errEmailAddr, errEmailPw, errEmailSmtpHost, errEmailSmtpPort, errDestEmailAddr)
 	} else {
 		fmt.Println("Billbee forwarding disabled.")
 	}
