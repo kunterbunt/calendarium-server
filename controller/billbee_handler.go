@@ -5,20 +5,21 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/kunterbunt/calendarium-server/model"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/kunterbunt/calendarium-server/model"
 )
 
 type billbeeInvoiceAddress struct {
 	BillbeeID   int64  `json:"BillbeeId"`
 	FirstName   string `json:"FirstName"`
 	LastName    string `json:"LastName"`
-	Company		string `json:"Company"`
+	Company     string `json:"Company"`
 	Street      string `json:"Street"`
 	HouseNumber string `json:"HouseNumber"`
 	Zip         string `json:"Zip"`
@@ -30,7 +31,7 @@ type billbeeInvoiceAddress struct {
 type billbeeShippingAddress struct {
 	FirstName   string `json:"FirstName"`
 	LastName    string `json:"LastName"`
-	Company		string `json:"Company"`
+	Company     string `json:"Company"`
 	Street      string `json:"Street"`
 	HouseNumber string `json:"HouseNumber"`
 	Zip         string `json:"Zip"`
@@ -72,8 +73,8 @@ type billbeeBody struct {
 	TotalCost       float64                `json:"TotalCost"`
 	OrderItems      []billbeeOrderItems    `json:"OrderItems"`
 	Currency        string                 `json:"Currency"`
-	SellerComment	string				   `json:"SellerComment"`
-	Tags			[]string	   	   	   `json:"Tags"`
+	SellerComment   string                 `json:"SellerComment"`
+	Tags            []string               `json:"Tags"`
 }
 
 func ToOrderId(id int64) string {
@@ -108,7 +109,7 @@ func newBillbeeOrderBody(order *model.Order) billbeeBody {
 			BillbeeID:   0,
 			FirstName:   order.FirstNameInvoice,
 			LastName:    order.LastNameInvoice,
-			Company: 	 order.CompanyInvoice,
+			Company:     order.CompanyInvoice,
 			Street:      order.AddressStreetInvoice,
 			HouseNumber: order.AddressStreetNoInvoice,
 			Zip:         order.AddressCodeInvoice,
@@ -119,7 +120,7 @@ func newBillbeeOrderBody(order *model.Order) billbeeBody {
 		ShippingAddress: billbeeShippingAddress{
 			FirstName:   order.FirstNameDelivery,
 			LastName:    order.LastNameDelivery,
-			Company: 	 order.CompanyDelivery,
+			Company:     order.CompanyDelivery,
 			Street:      order.AddressStreetDelivery,
 			HouseNumber: order.AddressStreetNoDelivery,
 			Zip:         order.AddressCodeDelivery,
@@ -146,7 +147,7 @@ func newBillbeeOrderBody(order *model.Order) billbeeBody {
 		//	Email:           "hallo@calendariumculinarium.de",
 		//},
 		SellerComment: order.Message,
-		Tags: tags,
+		Tags:          tags,
 	}
 	return body
 }
@@ -169,7 +170,7 @@ func newBillbeeUzOrderBody(order *model.Order, convivium string) billbeeBody {
 			BillbeeID:   0,
 			FirstName:   order.FirstNameInvoice,
 			LastName:    order.LastNameInvoice,
-			Company: 	 order.CompanyInvoice,
+			Company:     order.CompanyInvoice,
 			Street:      order.AddressStreetInvoice,
 			HouseNumber: order.AddressStreetNoInvoice,
 			Zip:         order.AddressCodeInvoice,
@@ -180,7 +181,7 @@ func newBillbeeUzOrderBody(order *model.Order, convivium string) billbeeBody {
 		ShippingAddress: billbeeShippingAddress{
 			FirstName:   order.FirstNameDelivery,
 			LastName:    order.LastNameDelivery,
-			Company: 	 order.CompanyDelivery,
+			Company:     order.CompanyDelivery,
 			Street:      order.AddressStreetDelivery,
 			HouseNumber: order.AddressStreetNoDelivery,
 			Zip:         order.AddressCodeDelivery,
@@ -208,21 +209,21 @@ func newBillbeeUzOrderBody(order *model.Order, convivium string) billbeeBody {
 		//	Email:           "hallo@calendariumculinarium.de",
 		//},
 		SellerComment: order.Message,
-		Tags: tags,
+		Tags:          tags,
 	}
 	return body
 }
 
 // BillbeeHandler can forward orders to billbee.
 type BillbeeHandler struct {
-	apiKey       	string
-	authUsername 	string
-	authPassword 	string
-	url          	string
-	mutex        	sync.Mutex
+	apiKey          string
+	authUsername    string
+	authPassword    string
+	url             string
+	mutex           sync.Mutex
 	lastRequestTime time.Time
-	Emailer 		*Emailer
-	destEmails		[]string
+	Emailer         *Emailer
+	destEmails      []string
 }
 
 // NewBillbeeHandler instantiates a new forwarder.
@@ -257,7 +258,7 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 	jsonContent, err := json.Marshal(newBillbeeOrderBody(order))
 	if err != nil {
 		if billbee.Emailer != nil {
-			err2 := billbee.Emailer.SendEmail(billbee.destEmails, "Fehler beim Bestellung erstellen", err.Error() + "\r\n\r\nBei Bestellung mit ID " + strconv.Itoa(int(order.ID)) + "\r\nHier Bestelldetails einsehen: https://calendariumculinarium.de/api/orders")
+			err2 := billbee.Emailer.SendEmail(billbee.destEmails, "Fehler beim Bestellung erstellen", err.Error()+"\r\n\r\nBei Bestellung mit ID "+strconv.Itoa(int(order.ID))+"\r\nHier Bestelldetails einsehen: https://calendariumculinarium.de/api/orders")
 			if err2 != nil {
 				log.Fatal(err2)
 			}
@@ -267,7 +268,7 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 	request, err := http.NewRequest("POST", billbee.url, bytes.NewBuffer(jsonContent))
 	if err != nil {
 		if billbee.Emailer != nil {
-			err2 := billbee.Emailer.SendEmail(billbee.destEmails, "Fehler beim Bestellung erstellen", err.Error() + "\r\n\r\nBei Bestellung mit ID " + strconv.Itoa(int(order.ID)) + "\r\nHier Bestelldetails einsehen: https://calendariumculinarium.de/api/orders")
+			err2 := billbee.Emailer.SendEmail(billbee.destEmails, "Fehler beim Bestellung erstellen", err.Error()+"\r\n\r\nBei Bestellung mit ID "+strconv.Itoa(int(order.ID))+"\r\nHier Bestelldetails einsehen: https://calendariumculinarium.de/api/orders")
 			if err2 != nil {
 				log.Fatal(err2)
 			}
@@ -281,9 +282,10 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 
 	client := &http.Client{}
 	response, err := client.Do(request)
+	fmt.Println(response)
 	if err != nil {
 		if billbee.Emailer != nil {
-			err2 := billbee.Emailer.SendEmail(billbee.destEmails, "Fehler beim Bestellung weiterleiten", err.Error() + "\r\n\r\nBei Bestellung mit ID " + strconv.Itoa(int(order.ID)) + "\r\nHier Bestelldetails einsehen: https://calendariumculinarium.de/api/orders")
+			err2 := billbee.Emailer.SendEmail(billbee.destEmails, "Fehler beim Bestellung weiterleiten", err.Error()+"\r\n\r\nBei Bestellung mit ID "+strconv.Itoa(int(order.ID))+"\r\nHier Bestelldetails einsehen: https://calendariumculinarium.de/api/orders")
 			if err2 != nil {
 				log.Fatal(err2)
 			}
@@ -301,7 +303,7 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 			errorString = errorString + " with error message: " + string(body)
 		}
 		if billbee.Emailer != nil {
-			err2 := billbee.Emailer.SendEmail(billbee.destEmails, "Fehler bei billbee", errorString + "\r\n\r\nBei Bestellung mit ID " + strconv.Itoa(int(order.ID)) + "\r\nHier Bestelldetails einsehen: https://calendariumculinarium.de/api/orders")
+			err2 := billbee.Emailer.SendEmail(billbee.destEmails, "Fehler bei billbee", errorString+"\r\n\r\nBei Bestellung mit ID "+strconv.Itoa(int(order.ID))+"\r\nHier Bestelldetails einsehen: https://calendariumculinarium.de/api/orders")
 			if err2 != nil {
 				log.Fatal(err2)
 			}
@@ -313,7 +315,7 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		if billbee.Emailer != nil {
-			err2 := billbee.Emailer.SendEmail(billbee.destEmails, "Fehler beim Response lesen", err.Error() + "\r\n\r\nBei Bestellung mit ID " + strconv.Itoa(int(order.ID)) + "\r\nHier Bestelldetails einsehen: https://calendariumculinarium.de/api/orders")
+			err2 := billbee.Emailer.SendEmail(billbee.destEmails, "Fehler beim Response lesen", err.Error()+"\r\n\r\nBei Bestellung mit ID "+strconv.Itoa(int(order.ID))+"\r\nHier Bestelldetails einsehen: https://calendariumculinarium.de/api/orders")
 			if err2 != nil {
 				log.Fatal(err2)
 			}
