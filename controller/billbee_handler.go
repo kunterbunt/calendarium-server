@@ -282,6 +282,9 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 
 	client := &http.Client{}
 	response, err := client.Do(request)
+	fmt.Println("printing request")
+	fmt.Println(request)
+	fmt.Println("printing response")
 	fmt.Println(response)
 	if err != nil {
 		if billbee.Emailer != nil {
