@@ -285,7 +285,7 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 	fmt.Println("printing request")
 	fmt.Println(request)
 	fmt.Println("printing json")
-	fmt.Println(jsonContent)
+	fmt.Println(newBillbeeOrderBody(order))
 	fmt.Println("printing response")
 	fmt.Println(response)
 	if err != nil {
