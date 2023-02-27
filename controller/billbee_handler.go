@@ -292,6 +292,17 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 		return "", err
 	}
 
+	fmt.Println("printing request")
+	fmt.Println(request)
+	fmt.Println("printing auth username, then passwod")
+	fmt.Println(billbee.authUsername)
+	fmt.Println(billbee.authPassword)
+	fmt.Println("printing json")
+	fmt.Println(newBillbeeOrderBody(order))
+	fmt.Println(string(jsonContent))
+	fmt.Println("printing response")
+	fmt.Println(response)
+
 	if response.StatusCode != 201 {
 		errorString := "Billbee returned HTTP status: " + response.Status
 		defer response.Body.Close()
