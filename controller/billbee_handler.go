@@ -274,9 +274,14 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 	request, err := http.NewRequest("POST", billbee.url, bytes.NewBuffer(jsonContent))
 	fmt.Println("made request")
 	if err != nil {
+		fmt.Println("error")
+		fmt.Println(err.Error())
 		if billbee.Emailer != nil {
+			fmt.Println("trying to send email")
 			err2 := billbee.Emailer.SendEmail(billbee.destEmails, "Fehler beim Bestellung erstellen", err.Error()+"\r\n\r\nBei Bestellung mit ID "+strconv.Itoa(int(order.ID))+"\r\nHier Bestelldetails einsehen: https://calendariumculinarium.de/api/orders")
 			if err2 != nil {
+				fmt.Println("error")
+				fmt.Println(err2.Error())
 				log.Fatal(err2)
 			}
 		}
