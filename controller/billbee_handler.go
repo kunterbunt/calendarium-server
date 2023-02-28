@@ -274,9 +274,9 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 	request, err := http.NewRequest("POST", billbee.url, bytes.NewBuffer(jsonContent))
 	fmt.Println("made request")
 	if err != nil {
-		fmt.Println("error")
+		fmt.Println("error creating request, error is printed in next line: ")
 		fmt.Println(err.Error())
-		fmt.Println("billbee URL")
+		fmt.Println("billbee URL in next line: ")
 		fmt.Println(billbee.url)
 
 		if billbee.Emailer != nil {
