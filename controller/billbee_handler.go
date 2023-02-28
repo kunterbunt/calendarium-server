@@ -280,6 +280,14 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("X-Billbee-Api-Key", billbee.apiKey)
 
+	fmt.Println("printing request")
+	fmt.Println(request)
+	fmt.Println("printing auth username, then passwod")
+	fmt.Println(billbee.authUsername)
+	fmt.Println(billbee.authPassword)
+	fmt.Println("printing json")
+	fmt.Println(string(jsonContent))
+
 	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
@@ -292,13 +300,6 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 		return "", err
 	}
 
-	fmt.Println("printing request")
-	fmt.Println(request)
-	fmt.Println("printing auth username, then passwod")
-	fmt.Println(billbee.authUsername)
-	fmt.Println(billbee.authPassword)
-	fmt.Println("printing json")
-	fmt.Println(string(jsonContent))
 	fmt.Println("printing response")
 	fmt.Println(response)
 
