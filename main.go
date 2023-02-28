@@ -165,7 +165,6 @@ func main() {
 
 	// Start listening...
 	fmt.Println("Listening on port 8000...")
-	fmt.Println("yes this is the newest version")
 	port := 8000
 	server.ListenAndServe(port)
 }

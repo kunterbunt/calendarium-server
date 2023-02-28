@@ -256,9 +256,8 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 	}
 	billbee.lastRequestTime = time.Now()
 	jsonContent, err := json.Marshal(newBillbeeOrderBody(order))
-	fmt.Println("json created")
 	if err != nil {
-		fmt.Println("error!")
+		fmt.Println("error creating json: ")
 		fmt.Println(err.Error())
 		if billbee.Emailer != nil {
 			fmt.Println("sending error email")
@@ -272,7 +271,6 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 		return "", err
 	}
 	request, err := http.NewRequest("POST", billbee.url, bytes.NewBuffer(jsonContent))
-	fmt.Println("made request")
 	if err != nil {
 		fmt.Println("error creating request, error is printed in next line: ")
 		fmt.Println(err.Error())
@@ -295,17 +293,13 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("X-Billbee-Api-Key", billbee.apiKey)
 
-	fmt.Println("printing request")
-	fmt.Println(request)
-	fmt.Println("printing auth username, then passwod")
-	fmt.Println(billbee.authUsername)
-	fmt.Println(billbee.authPassword)
-	fmt.Println("printing json")
-	fmt.Println(string(jsonContent))
-
 	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
+		fmt.Println("error sending request, printing request in next line")
+		fmt.Println(request)
+		fmt.Println("printing json")
+		fmt.Println(string(jsonContent))
 		if billbee.Emailer != nil {
 			err2 := billbee.Emailer.SendEmail(billbee.destEmails, "Fehler beim Bestellung weiterleiten", err.Error()+"\r\n\r\nBei Bestellung mit ID "+strconv.Itoa(int(order.ID))+"\r\nHier Bestelldetails einsehen: https://calendariumculinarium.de/api/orders")
 			if err2 != nil {
@@ -315,10 +309,7 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 		return "", err
 	}
 
-	fmt.Println("printing response")
-	fmt.Println(response)
-
-	if response.StatusCode != 201 && response.StatusCode != 200 {
+	if response.StatusCode != 201 {
 		errorString := "Billbee returned HTTP status: " + response.Status
 		defer response.Body.Close()
 		body, err := ioutil.ReadAll(response.Body)
