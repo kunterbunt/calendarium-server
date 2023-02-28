@@ -318,7 +318,7 @@ func (billbee *BillbeeHandler) ForwardOrder(order *model.Order) (string, error) 
 	fmt.Println("printing response")
 	fmt.Println(response)
 
-	if response.StatusCode != 201 {
+	if response.StatusCode != 201 && response.StatusCode != 200 {
 		errorString := "Billbee returned HTTP status: " + response.Status
 		defer response.Body.Close()
 		body, err := ioutil.ReadAll(response.Body)
